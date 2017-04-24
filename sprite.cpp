@@ -28,6 +28,15 @@ sprite::~sprite()
 
 void sprite::move(int x,int y)
 {
+	if(x<0)
+		x=0;
+	if(x>WIDTH/TILESIZE-SPRITESIZE/TILESIZE)
+		x=WIDTH/TILESIZE-SPRITESIZE/TILESIZE;
+	
+	if(y<0)
+		y=0;
+	if(y>HEIGHT/TILESIZE-SPRITESIZE/TILESIZE)
+		y=HEIGHT/TILESIZE-SPRITESIZE/TILESIZE;
 	this->x = x;
 	this->y = y;
 	rcSprite.x = x*TILESIZE;

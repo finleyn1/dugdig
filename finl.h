@@ -36,6 +36,9 @@ void loadTex(void);
 void ChangeTile(int x, int y , int type);
 void Dig(int x, int y, int dir);
 int CheckGrid(int x, int y, int dir);
+void loadMap(char *filename);
+void ChangeGrid(int x,int y,int type);
+int checkCollision(int aX,int aY,int bX,int bY);
 
 
 

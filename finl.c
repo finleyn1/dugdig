@@ -1,4 +1,6 @@
 #include "finl.h"
+#include <stdio.h>
+
 
 SDL_Rect tileClip;
 char tilemap[MAPSIZE];
@@ -22,6 +24,69 @@ void InitMap(void)
 			tilemap[i*WIDTH/TILESIZE+j] = 0; 
 			//init all tiles to undug
 }
+
+void loadMap(char *filename)
+{
+	int i=0;
+	int j=0;
+	int type=0;
+	FILE *infile = fopen(filename,"r");
+	if(infile==NULL)
+		return;
+	
+	for(i=0;i<HEIGHT/GRIDSIZE;i++)
+	{
+		for(j=0;j<WIDTH/GRIDSIZE;j++)
+		{
+			type = fgetc(infile);
+			type-='0';
+			ChangeGrid(j,i,type);
+		}
+	}
+	fclose(infile);
+}
+
+int checkCollision(int aX,int aY,int bX,int bY) //check if a collides with b
+{
+	if(aX+SPRITESIZE/TILESIZE >bX & aX+1 < bX+SPRITESIZE/TILESIZE & aY+SPRITESIZE/TILESIZE > bY  & aY+1 <bY+SPRITESIZE/TILESIZE)
+		return 1;
+	return 0;
+}
+
+void ChangeGrid(int x,int y,int type)
+{
+	int i=0;
+	int j=0;
+
+	y*=GRIDSIZE/TILESIZE;
+	x*=GRIDSIZE/TILESIZE;
+	
+	for(i=0;i<GRIDSIZE/TILESIZE;i++)
+		for(j=0;j<GRIDSIZE/TILESIZE;j++)
+			switch(type)
+			{	
+				case 1:
+					switch(j)
+					{
+						case 0:
+							ChangeTile(x+i,y+j,2);
+							break;
+						case 1:
+						case 2:
+							ChangeTile(x+i,y+j,1);
+							break;
+						case 3:
+							ChangeTile(x+i,y+j,3);
+							break;
+					}	
+					break;
+				default:
+					//ChangeTile(x*TILESIZE+i,y*TILESIZE+j,0);
+					break;
+			}
+
+}
+
 
 
 //load textures from BMPS
@@ -119,7 +184,7 @@ void Dig(int x, int y ,int dir)
 int CheckGrid(int x, int y, int dir)
 {
 	int i=0;
-	//int j=0;
+//	int j=0;
 	int check =1;
 
 	//'snap' to the nearest grid space
@@ -133,6 +198,8 @@ int CheckGrid(int x, int y, int dir)
 		x+=1;
 	if(dir==3)
 		y+=1;
+	
+
 
 	if(x>WIDTH/TILESIZE | y>HEIGHT/TILESIZE) //if out of bounds break
 		return 0;
@@ -140,8 +207,9 @@ int CheckGrid(int x, int y, int dir)
 	//convert back to 'tile coordinates'	
 	x*=GRIDSIZE/TILESIZE;
 	y*=GRIDSIZE/TILESIZE;	
-	
-	/****	graphical check, for debugging
+
+
+	/***	debug print	
 	printf("(%d,%d),dir:%d\n",x,y,dir);
 	for(i=0;i<GRIDSIZE/TILESIZE;i++)
 	{
@@ -150,24 +218,24 @@ int CheckGrid(int x, int y, int dir)
 
 		putchar('\n');
 	}
-	****/
+	***/
 	
 	//check  3 tiles from the direction approached to see if it's passable	
-	for(i=0;i<3;i++)
+	for(i=0;i<4 & check==1 ;i++)
 	{
 		switch(dir)	//check different depending on which direction
 		{
 			case 1:
-				check = tilemap[(y+1)*(WIDTH/TILESIZE) + x+3-i];
+				check = tilemap[(y+2)*(WIDTH/TILESIZE) + x+2-i];
 				break;
 			case 2:
-				check = tilemap[(y+1)*(WIDTH/TILESIZE) + x+i];
+				check = tilemap[(y+2)*(WIDTH/TILESIZE) + x+i-1];
 				break;
 			case 3:
-				check = tilemap[(y+i)*(WIDTH/TILESIZE) + x+1];
+				check = tilemap[(y+i-1)*(WIDTH/TILESIZE) + x+2];
 				break;
 			case 4:
-				check = tilemap[(y+3-i)*(WIDTH/TILESIZE) + x+1];
+				check = tilemap[(y+2-i)*(WIDTH/TILESIZE) + x+2];
 				break;
 		}
 	}

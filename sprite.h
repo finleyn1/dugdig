@@ -1,10 +1,10 @@
 #pragma once
 #include "finl.h"
 
-
 class sprite
 {
 	public:
+		sprite();
 		sprite(int x,int y,char *texture);
 		~sprite();
 		void draw(void);

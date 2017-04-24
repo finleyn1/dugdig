@@ -6,7 +6,8 @@ class foe : public sprite
 {
 	public:
 		using sprite::move;
-		
+		foe();
+
 		foe(int x,int y,char *texture) : sprite(x,y,texture)
 		{
 			setTarget(0,0);
@@ -22,10 +23,12 @@ class foe : public sprite
 		}
 		int getTy(void)
 		{
-			return targety;
+			return targetY;
 		}
+
 		void move(void);
 	private:
-	int targetX;	
-	int targetY;
+		void TargetPlayer(void);
+		int targetX;	
+		int targetY;
 };
